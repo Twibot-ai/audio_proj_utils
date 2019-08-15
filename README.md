@@ -1,4 +1,11 @@
 ## Command line utils
+### Requirements
+You need to install ffmpeg, ffprobe to use it.
+
+https://ffmpeg.zeranoe.com/builds/
+
+And then add /bin/ with ffmpeg.exe and ffprobe.exe to your environment
+
 ### Help
 `python main.py help`
 
