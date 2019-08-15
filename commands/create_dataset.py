@@ -27,6 +27,7 @@ class CreateDataset:
             return
 
         utils_files.create_dir(self.converted_files)
+        utils_files.create_dir(self.converted_files + 'audio\\')
 
         self.iterate_seasons()
 
@@ -93,7 +94,7 @@ class CreateDataset:
             return
 
         new_name = f'{self.prefix}_{self.counter}.wav'
-        new_file_path = self.converted_files + new_name
+        new_file_path = self.converted_files + 'audio\\' + new_name
 
         if file_type == 'flac':
             converter.flac2wav(f, new_file_path, file_type)
