@@ -119,19 +119,37 @@ class CreateDataset:
         return '\n'.join(lines)
 
     def create_datasets(self):
-        json_file = open(self.converted_files + 'full_dataset.json', 'w+')
+        self.create_deepvoice3_dataset()
+        self.create_full_info_dump()
+        self.create_tacatron2_dataset()
 
+    def create_full_info_dump(self):
         json_string = json.dumps(self.content)
-        json_file.write(json_string)
-        json_file.close()
+        utils_files.create_file(self.converted_files + 'full_dataset.json', json_string)
 
-        json_for_dataset = open(self.converted_files + 'dataset.json', 'w+')
+    def create_deepvoice3_dataset(self):
         dataset_hash = {}
         for record in self.content:
             dataset_hash['./datasets/audio/' + record['file_name']] = record['quote']
+
         json_string = json.dumps(dataset_hash)
-        json_for_dataset.write(json_string)
-        json_for_dataset.close()
+        utils_files.create_file(self.converted_files + 'dataset.json', json_string)
+
+    def create_tacatron2_dataset(self):
+        total_rows = ["{file_name}|{quote}".format(file_name=c['file_name'], quote=c['quote']) for c in self.content]
+        train_rows = []
+        validation_rows = []
+
+        index = 0
+        for row in total_rows:
+            if index % 20 == 0:
+                validation_rows.append(row)
+            else:
+                train_rows.append(row)
+            index += 1
+
+        utils_files.create_file(self.converted_files + 'train_taca2.txt', "\n".join(train_rows))
+        utils_files.create_file(self.converted_files + 'validation_taca2.txt', "\n".join(validation_rows))
 
     def skip_marked(self, file_name):
         return file_name[0] == '#'
