@@ -97,7 +97,7 @@ class CreateDataset:
         new_file_path = self.converted_files + 'audio\\' + new_name
 
         if file_type == 'flac':
-            converter.flac2wav(f, new_file_path, file_type)
+            converter.flac2wav(f, new_file_path, file_type, frame_rate=22050, sample_width=2)
             file_type = 'wav'
         elif file_type == 'wav':
             shutil.copyfile(f, new_file_path)
@@ -136,20 +136,30 @@ class CreateDataset:
         utils_files.create_file(self.converted_files + 'dataset.json', json_string)
 
     def create_tacatron2_dataset(self):
-        total_rows = ["{file_name}|{quote}".format(file_name=c['file_name'], quote=c['quote']) for c in self.content]
+        # https://github.com/NVIDIA/tacotron2
         train_rows = []
+        train_rows_mel = []
         validation_rows = []
-
+        validation_rows_mel = []
         index = 0
-        for row in total_rows:
+        for c in self.content:
+            file_name = c['file_name'].replace('.wav', '')
+            row_mel = "{file_name}.pt|{quote}".format(file_name=file_name, quote=c['quote'])
+            row_wav = "{file_name}.wav|{quote}".format(file_name=file_name, quote=c['quote'])
+
             if index % 20 == 0:
-                validation_rows.append(row)
+                validation_rows.append(row_wav)
+                validation_rows_mel.append(row_mel)
             else:
-                train_rows.append(row)
+                train_rows.append(row_wav)
+                train_rows_mel.append(row_mel)
             index += 1
 
         utils_files.create_file(self.converted_files + 'train_taca2.txt', "\n".join(train_rows))
+        utils_files.create_file(self.converted_files + 'train_mel_taca2.txt', "\n".join(train_rows_mel))
+
         utils_files.create_file(self.converted_files + 'validation_taca2.txt', "\n".join(validation_rows))
+        utils_files.create_file(self.converted_files + 'validation_mel_taca2.txt', "\n".join(validation_rows_mel))
 
     def skip_marked(self, file_name):
         return file_name[0] == '#'
