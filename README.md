@@ -53,3 +53,14 @@ Noise level argument:
 Example of usage:
 
 `python main.py create_dataset "F:\projects\pony_pre_proj\all" "F:\projects\pony_pre_proj" only_clean Twilight "Clean"`
+
+### Extract only audio of one pony
+How to use:
+
+`python main.py separate <path to all audio> <path to save> <name of taget folder> <pony_name>`
+
+Example of usage: 
+            
+`python main.py separate "F:\projects\pony_pre_proj\all" "F:\projects\pony_pre_proj" twilight_folder Twilight`
+
+All arguments of this command are the same as for dataset creation.
