@@ -31,3 +31,9 @@ def create_dir(path):
 
 def get_base_name(f):
     os.path.basename(f)
+
+
+def create_file(file_dir, content):
+    new_file = open(file_dir, 'w+')
+    new_file.write(content)
+    new_file.close()

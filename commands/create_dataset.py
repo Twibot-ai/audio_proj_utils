@@ -97,7 +97,7 @@ class CreateDataset:
         new_file_path = self.converted_files + 'audio\\' + new_name
 
         if file_type == 'flac':
-            converter.flac2wav(f, new_file_path, file_type)
+            converter.flac2wav(f, new_file_path, file_type, frame_rate=22050, sample_width=2)
             file_type = 'wav'
         elif file_type == 'wav':
             shutil.copyfile(f, new_file_path)
@@ -119,19 +119,47 @@ class CreateDataset:
         return '\n'.join(lines)
 
     def create_datasets(self):
-        json_file = open(self.converted_files + 'full_dataset.json', 'w+')
+        self.create_deepvoice3_dataset()
+        self.create_full_info_dump()
+        self.create_tacatron2_dataset()
 
+    def create_full_info_dump(self):
         json_string = json.dumps(self.content)
-        json_file.write(json_string)
-        json_file.close()
+        utils_files.create_file(self.converted_files + 'full_dataset.json', json_string)
 
-        json_for_dataset = open(self.converted_files + 'dataset.json', 'w+')
+    def create_deepvoice3_dataset(self):
         dataset_hash = {}
         for record in self.content:
             dataset_hash['./datasets/audio/' + record['file_name']] = record['quote']
+
         json_string = json.dumps(dataset_hash)
-        json_for_dataset.write(json_string)
-        json_for_dataset.close()
+        utils_files.create_file(self.converted_files + 'dataset.json', json_string)
+
+    def create_tacatron2_dataset(self):
+        # https://github.com/NVIDIA/tacotron2
+        train_rows = []
+        train_rows_mel = []
+        validation_rows = []
+        validation_rows_mel = []
+        index = 0
+        for c in self.content:
+            file_name = c['file_name'].replace('.wav', '')
+            row_mel = "{file_name}.pt|{quote}".format(file_name=file_name, quote=c['quote'])
+            row_wav = "{file_name}.wav|{quote}".format(file_name=file_name, quote=c['quote'])
+
+            if index % 20 == 0:
+                validation_rows.append(row_wav)
+                validation_rows_mel.append(row_mel)
+            else:
+                train_rows.append(row_wav)
+                train_rows_mel.append(row_mel)
+            index += 1
+
+        utils_files.create_file(self.converted_files + 'train_taca2.txt', "\n".join(train_rows))
+        utils_files.create_file(self.converted_files + 'train_mel_taca2.txt', "\n".join(train_rows_mel))
+
+        utils_files.create_file(self.converted_files + 'validation_taca2.txt', "\n".join(validation_rows))
+        utils_files.create_file(self.converted_files + 'validation_mel_taca2.txt', "\n".join(validation_rows_mel))
 
     def skip_marked(self, file_name):
         return file_name[0] == '#'
