@@ -7,6 +7,7 @@ class Router:
             from commands.create_dataset import CreateDataset
             CreateDataset(*args).call()
         elif action == 'separate':
-            pass
+            from commands.separate import SeparatePony
+            SeparatePony(*args).call()
         else:
             print('Your action was not found')

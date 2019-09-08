@@ -7,6 +7,7 @@ import shutil
 
 
 class CreateDataset:
+
     def __init__(self, path_to_audio, destination_path, dataset_dir_name, pony_name, noise_filter):
         self.content = []
         self.counter = 0
@@ -110,11 +111,13 @@ class CreateDataset:
 
     def help(self):
         lines = [
-            "Usage: python main.py create_dataset <path to all audio> <path to save> <pony_name> <noise level>",
+            "Usage: python main.py create_dataset <path to all audio> <path to save> <end dataset dir>"
+            " <pony_name> <noise level>",
             "Noise level can be: Clean, 'Very Noisy', Noisy",
             'All audio should be stored like this: S1/s1e1/*.*'
             """Example of usage: 
-            python main.py create_dataset "F:\projects\pony_pre_proj\all" "F:\projects\pony_pre_proj" Twilight 'Noisy,Clean,Very Noisy'"""
+            python main.py create_dataset "F:\projects\pony_pre_proj\all" "F:\projects\pony_pre_proj" Deepvoice3"
+            " Twilight 'Noisy,Clean,Very Noisy'"""
         ]
         return '\n'.join(lines)
 
