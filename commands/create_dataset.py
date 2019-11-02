@@ -31,8 +31,25 @@ class CreateDataset:
         utils_files.create_dir(self.converted_files + 'audio\\')
 
         self.iterate_seasons()
+        self.iterate_folder()
 
         self.create_datasets()
+
+    def iterate_folder(self):
+        folders = [
+            'EQG FG',
+            'EQG Holidays Unwrapped',
+            'EQG LoE',
+            'EQG Original',
+            'EQG RoF Special Source',
+            'EQG RR',
+        ]
+        for folder in folders:
+            sound_path = self.path_to_audio + '\\' + folder
+            if not utils_files.file_exist(sound_path):
+                continue
+            print(folder)
+            self.convert_files(sound_path, 'EQG', folder)
 
     def iterate_seasons(self):
         for season in range(1, 10):
