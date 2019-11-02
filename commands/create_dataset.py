@@ -142,8 +142,12 @@ class CreateDataset:
         # https://github.com/NVIDIA/tacotron2
         train_rows = []
         train_rows_mel = []
+        train_file_names = []
+
         validation_rows = []
         validation_rows_mel = []
+        validation_file_names = []
+
         index = 0
         for c in self.content:
             file_name = c['file_name'].replace('.wav', '')
@@ -153,16 +157,20 @@ class CreateDataset:
             if index % 20 == 0:
                 validation_rows.append(row_wav)
                 validation_rows_mel.append(row_mel)
+                validation_file_names.append(c['file_name'])
             else:
                 train_rows.append(row_wav)
                 train_rows_mel.append(row_mel)
+                train_file_names.append(c['file_name'])
             index += 1
 
         utils_files.create_file(self.converted_files + 'train_taca2.txt', "\n".join(train_rows))
         utils_files.create_file(self.converted_files + 'train_mel_taca2.txt', "\n".join(train_rows_mel))
+        utils_files.create_file(self.converted_files + 'train_names_taca2.txt', "|".join(train_file_names))
 
         utils_files.create_file(self.converted_files + 'validation_taca2.txt', "\n".join(validation_rows))
         utils_files.create_file(self.converted_files + 'validation_mel_taca2.txt', "\n".join(validation_rows_mel))
+        utils_files.create_file(self.converted_files + 'validation_names_taca2.txt', "|".join(validation_file_names))
 
     def skip_marked(self, file_name):
         return file_name[0] == '#'
