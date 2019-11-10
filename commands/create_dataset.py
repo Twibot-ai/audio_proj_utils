@@ -8,10 +8,11 @@ import shutil
 
 class CreateDataset:
 
-    def __init__(self, path_to_audio, destination_path, dataset_dir_name, pony_name, noise_filter):
+    def __init__(self, path_to_audio, destination_path, dataset_dir_name, pony_name, noise_filter, skip_time):
         self.content = []
         self.counter = 0
         self.parse_func = parsers.snake_case_parser
+        self.skip_time = skip_time
 
         if path_to_audio == 'help':
             print(self.help())
@@ -103,6 +104,12 @@ class CreateDataset:
 
         emotion, noise, quote, timestamp, pony_name, file_type = self.parse_func(file_name)
 
+        if file_type == 'txt':
+            return
+
+        if self.skip_by_time(f):
+            return
+
         # Skip if name isn't correct
         if self.pony_name != pony_name:
             return
@@ -191,6 +198,15 @@ class CreateDataset:
 
     def skip_marked(self, file_name):
         return file_name[0] == '#'
+
+    def skip_by_time(self, file_name):
+        if self.skip_time == 0:
+            return False
+        clip_length = converter.audio_length(file_name)
+        flag = self.skip_time > clip_length
+        if flag:
+            print('Skipped: ' + str(clip_length))
+        return flag
 
     def validate(self):
 

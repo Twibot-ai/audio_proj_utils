@@ -32,3 +32,8 @@ def flac2wav(file, dist_path, file_type, frame_rate=None, sample_width=None):
         audio = audio.set_sample_width(sample_width)
     # print(audio.sample_width, audio.frame_width, audio.max)
     audio.export(dist_path, format="wav")
+
+
+def audio_length(file):
+    audio = AudioSegment.from_file(Path(file))
+    return audio.duration_seconds
